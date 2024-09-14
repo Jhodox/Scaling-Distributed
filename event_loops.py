@@ -10,7 +10,7 @@ image_URLS = [
     "https://picsum.photos/250/250"
 ]
 
-async def fetch_image(session, url):
+async def fetch_image(session: aiohttp.ClientSession, url: str) -> Image:
     # with se encarga de gestionar el ciclo de vida de los recursos, abrir y cerrar la conexión
     async with session.get(url) as response:
         if response.status == 200:
@@ -22,14 +22,14 @@ async def fetch_image(session, url):
             return Image.open(BytesIO(img_data))
         return None
 
-async def fetch_all_images():
+async def fetch_all_images() -> list:
     async with aiohttp.ClientSession() as session:
         coroutines = [fetch_image(session, url) for url in image_URLS]
         # * es para cuando usamos listas, similar a .gather(coroutines[0], coroutines[1], ...) 
         images = await asyncio.gather(*coroutines)
         return images
 
-def interface(images) -> None:
+def interface(images: list) -> None:
     root = tk.Tk()
     root.title("Asyncio")
     
@@ -41,7 +41,7 @@ def interface(images) -> None:
         
     root.mainloop()
 
-def main():
+def main() -> None:
     # Logica de fetch de imagenes
     images = asyncio.run(fetch_all_images())
     # Mostar imagenes
